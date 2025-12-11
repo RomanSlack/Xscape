@@ -1,0 +1,73 @@
+[workspace]
+members = [
+    "crates/ios-sim-common",
+    "crates/ios-sim",
+    "crates/xcode-agent",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Roman Slack"]
+license = "MIT"
+repository = "https://github.com/romanslack/ios-sim-launcher"
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1.42", features = ["full"] }
+
+# HTTP
+axum = { version = "0.8", features = ["macros"] }
+reqwest = { version = "0.12", features = ["json", "multipart", "stream"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# CLI
+clap = { version = "4.5", features = ["derive", "env"] }
+
+# Tar archives
+tar = "0.4"
+flate2 = "1.0"
+
+# WebSocket (for log streaming)
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+futures-util = "0.3"
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Async utilities
+async-trait = "0.1"
+
+# UUID for session/build IDs
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+# File system operations
+walkdir = "2.5"
+ignore = "0.4"
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Process management (for agent on macOS)
+tokio-stream = "0.1"
+
+# Shared types
+ios-sim-common = { path = "crates/ios-sim-common" }
+
+# SHA256 for checksums
+sha2 = "0.10"
+
+# Bytes for streaming
+bytes = "1.9"

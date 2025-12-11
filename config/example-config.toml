@@ -1,0 +1,73 @@
+# ios-sim configuration file
+# Copy this to ~/.config/ios-sim/config.toml and customize
+
+[agent]
+# Connection mode: "remote" or "local-vm"
+# - remote: Connect to a Mac over the network
+# - local-vm: Use a local macOS VM managed by QEMU/KVM
+mode = "local-vm"
+
+# Remote Mac settings (when mode = "remote")
+remote_host = "192.168.1.100"
+remote_port = 8080
+
+# Connection timeout in seconds
+timeout_secs = 30
+
+[vm]
+# Path to QEMU binary
+qemu_path = "/usr/bin/qemu-system-x86_64"
+
+# Path to your macOS disk image (REQUIRED for local-vm mode)
+# Create with: qemu-img create -f qcow2 ~/macOS-VMs/macos.qcow2 128G
+disk_image = ""
+
+# Path to OVMF UEFI firmware
+ovmf_code = "/usr/share/OVMF/OVMF_CODE.fd"
+
+# VM resources - adjust based on your system
+memory = "8G"
+cpus = 4
+
+# Port mappings (host ports)
+vnc_port = 5900    # VNC display
+ssh_port = 2222    # SSH access to VM
+agent_port = 8080  # xcode-agent HTTP API
+
+# How long to wait for VM to boot (seconds)
+boot_timeout_secs = 180
+
+[vnc]
+# Path to noVNC installation
+# Install with: git clone https://github.com/novnc/noVNC.git /opt/novnc
+novnc_path = "/opt/novnc"
+
+# websockify port for browser access
+websockify_port = 6080
+
+# Automatically open browser when running 'ios-sim vm vnc'
+auto_open_browser = true
+
+[project]
+# Default scheme to build (if not specified via --scheme)
+# Leave empty to auto-detect
+# default_scheme = "MyApp"
+
+# Patterns to exclude from project sync (in addition to .gitignore)
+exclude_patterns = [
+    ".git",
+    "build",
+    "DerivedData",
+    "*.xcuserstate",
+    "Pods",
+    ".build",
+    "*.o",
+    "*.a",
+]
+
+[simulator]
+# Preferred device for running apps
+preferred_device = "iPhone 15 Pro"
+
+# Preferred iOS version (optional, uses latest if not specified)
+# preferred_runtime = "iOS 17.0"

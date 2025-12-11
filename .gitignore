@@ -1,0 +1,29 @@
+# Rust
+/target/
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Build artifacts
+*.app
+*.ipa
+DerivedData/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# VM images (too large for git)
+*.qcow2
+*.vmdk
+*.iso
