@@ -1,5 +1,5 @@
 mod novnc;
-mod qemu;
+pub mod qemu;
 
 pub use novnc::NoVncProxy;
 pub use qemu::QemuVm;

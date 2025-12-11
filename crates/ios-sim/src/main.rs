@@ -7,6 +7,7 @@ mod agent_client;
 mod cli;
 mod config;
 mod project;
+mod tui;
 mod vm;
 
 use cli::{Cli, Commands};
@@ -45,6 +46,15 @@ async fn main() -> Result<()> {
     let client = agent_client::AgentClient::new(&agent_url, config.agent.timeout_secs);
 
     match cli.command {
+        Commands::Interactive => {
+            cli::commands::interactive::run().await?;
+        }
+        Commands::Status => {
+            tui::quick_status().await?;
+        }
+        Commands::Setup => {
+            tui::SetupWizard::run().await?;
+        }
         Commands::Build(args) => {
             cli::commands::build::run(args, &client, &config).await?;
         }

@@ -22,10 +22,12 @@ Ubuntu                          macOS (VM or Remote)
 
 ## Features
 
+- **Interactive TUI** - Beautiful terminal interface for project selection, simulator management, and more
 - **Build iOS apps** from Linux using Xcode on a macOS VM or remote Mac
 - **Run in iOS Simulator** and view via VNC in your browser
 - **Stream build logs** in real-time via WebSocket
 - **Manage local macOS VM** with QEMU/KVM
+- **Setup Wizard** - Verify and configure your installation with guided prompts
 - **Support both modes**: local VM or remote Mac over network
 
 ## Quick Start
@@ -68,20 +70,82 @@ ios-sim run ./MyApp.xcodeproj --scheme MyApp
 ## CLI Commands
 
 ```
-ios-sim build    Build an iOS project
-ios-sim run      Build and run in simulator
-ios-sim vm       Manage local macOS VM
-  start          Start the VM
-  stop           Stop the VM
-  status         Show VM status
-  vnc            Open simulator in browser
-ios-sim devices  List available simulators
-ios-sim logs     Stream build/app logs
-ios-sim config   Manage configuration
-  init           Create config file
-  show           Show current config
-  set            Set a config value
+ios-sim interactive   Launch interactive TUI mode
+ios-sim status        Quick status check
+ios-sim setup         Run setup wizard
+
+ios-sim build         Build an iOS project
+ios-sim run           Build and run in simulator
+ios-sim vm            Manage local macOS VM
+  start               Start the VM
+  stop                Stop the VM
+  status              Show VM status
+  vnc                 Open simulator in browser
+ios-sim devices       List available simulators
+ios-sim logs          Stream build/app logs
+ios-sim config        Manage configuration
+  init                Create config file
+  show                Show current config
+  set                 Set a config value
 ```
+
+## Interactive Mode
+
+Launch the interactive TUI for a guided experience:
+
+```bash
+ios-sim interactive
+```
+
+```
+  ios-sim
+  iOS Development from Linux
+
+? Select action
+> Run Project         Build and run in simulator
+  Build Project       Build without running
+  Manage Simulators   List, boot, shutdown devices
+  VM Control          Start, stop, VNC access
+  Settings            Configure ios-sim
+  Setup Wizard        Verify installation
+  Exit
+```
+
+The interactive mode provides:
+- **Project Browser** - Navigate and select your Xcode projects
+- **Scheme Selection** - Fuzzy search through available schemes
+- **Simulator Picker** - Choose devices with runtime info and status
+- **Progress Indicators** - Spinners and progress bars for all operations
+- **Colorful Output** - Status indicators and formatted logs
+
+## Quick Status
+
+Check your setup at a glance:
+
+```bash
+ios-sim status
+```
+
+```
+   +  Status:      Connected
+   +  Xcode:       16.0
+   +  Simulators:  12
+```
+
+## Setup Wizard
+
+Verify and fix your installation:
+
+```bash
+ios-sim setup
+```
+
+The wizard will:
+1. Check your configuration file
+2. Test agent connectivity
+3. Verify Xcode installation
+4. List available simulators
+5. Offer to start the VM if needed
 
 ## Configuration
 

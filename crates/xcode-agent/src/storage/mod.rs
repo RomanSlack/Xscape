@@ -79,6 +79,12 @@ pub async fn extract_project(
             }
 
             let dest = extract_path_clone.join(&path);
+
+            // Create parent directories if needed
+            if let Some(parent) = dest.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+
             entry.unpack(&dest)?;
             count += 1;
         }

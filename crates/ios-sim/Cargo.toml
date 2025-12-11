@@ -61,3 +61,14 @@ open = "5"
 
 # Directories
 dirs = "5"
+
+# Unix process management
+libc = "0.2"
+
+# TUI and interactive CLI
+ratatui = "0.29"
+crossterm = "0.28"
+indicatif = "0.17"
+dialoguer = { version = "0.11", features = ["fuzzy-select"] }
+console = "0.15"
+colored = "2.1"

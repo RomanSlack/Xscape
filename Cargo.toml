@@ -18,7 +18,7 @@ repository = "https://github.com/romanslack/ios-sim-launcher"
 tokio = { version = "1.42", features = ["full"] }
 
 # HTTP
-axum = { version = "0.8", features = ["macros"] }
+axum = { version = "0.8", features = ["macros", "ws", "multipart"] }
 reqwest = { version = "0.12", features = ["json", "multipart", "stream"] }
 tower = "0.5"
 tower-http = { version = "0.6", features = ["cors", "trace"] }

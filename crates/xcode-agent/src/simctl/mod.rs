@@ -6,33 +6,45 @@ use std::process::Stdio;
 use tokio::process::Command;
 use tracing::{debug, info};
 
-/// Raw simctl JSON output structures
+/// Raw simctl JSON output structures for devices
 #[derive(Debug, Deserialize)]
-struct SimctlList {
+struct SimctlDeviceList {
     devices: HashMap<String, Vec<SimctlDevice>>,
+}
+
+/// Raw simctl JSON output structures for runtimes
+#[derive(Debug, Deserialize)]
+struct SimctlRuntimeList {
     runtimes: Vec<SimctlRuntime>,
 }
 
 #[derive(Debug, Deserialize)]
 struct SimctlDevice {
-    #[serde(rename = "udid")]
+    #[serde(default)]
     udid: String,
+    #[serde(default)]
     name: String,
-    #[serde(rename = "deviceTypeIdentifier")]
+    #[serde(rename = "deviceTypeIdentifier", default)]
     device_type_identifier: Option<String>,
+    #[serde(default)]
     state: String,
-    #[serde(rename = "isAvailable")]
+    #[serde(rename = "isAvailable", default)]
     is_available: Option<bool>,
+    #[serde(rename = "availabilityError", default)]
+    availability_error: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct SimctlRuntime {
+    #[serde(default)]
     identifier: String,
+    #[serde(default)]
     name: String,
+    #[serde(default)]
     version: String,
-    #[serde(rename = "buildversion")]
-    build_version: String,
-    #[serde(rename = "isAvailable")]
+    #[serde(rename = "buildversion", default)]
+    build_version: Option<String>,
+    #[serde(rename = "isAvailable", default)]
     is_available: bool,
 }
 
@@ -51,7 +63,7 @@ pub async fn list_devices() -> Result<Vec<SimulatorDevice>> {
         ));
     }
 
-    let list: SimctlList = serde_json::from_slice(&output.stdout)
+    let list: SimctlDeviceList = serde_json::from_slice(&output.stdout)
         .context("Failed to parse simctl JSON output")?;
 
     let mut devices = Vec::new();
@@ -93,7 +105,7 @@ pub async fn list_runtimes() -> Result<Vec<SimulatorRuntime>> {
         ));
     }
 
-    let list: SimctlList = serde_json::from_slice(&output.stdout)
+    let list: SimctlRuntimeList = serde_json::from_slice(&output.stdout)
         .context("Failed to parse simctl JSON output")?;
 
     let runtimes = list
@@ -103,7 +115,7 @@ pub async fn list_runtimes() -> Result<Vec<SimulatorRuntime>> {
             identifier: r.identifier,
             name: r.name,
             version: r.version,
-            build_version: r.build_version,
+            build_version: r.build_version.unwrap_or_default(),
             is_available: r.is_available,
         })
         .collect();
@@ -186,7 +198,9 @@ pub async fn launch_app(
     info!("Launching app {} on simulator {}", bundle_id, udid);
 
     let mut cmd = Command::new("xcrun");
-    cmd.args(["simctl", "launch", "--console-pty", udid, bundle_id]);
+    // Use --terminate-running-process to restart if already running
+    // Don't use --console-pty as it blocks waiting for the app
+    cmd.args(["simctl", "launch", "--terminate-running-process", udid, bundle_id]);
 
     // Add app arguments
     for arg in args {

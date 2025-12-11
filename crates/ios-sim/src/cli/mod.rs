@@ -28,6 +28,15 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    /// Interactive mode - TUI for building and running iOS apps
+    Interactive,
+
+    /// Quick status check
+    Status,
+
+    /// Setup wizard - verify and configure your installation
+    Setup,
+
     /// Build an iOS project
     Build(BuildArgs),
 
@@ -68,7 +77,7 @@ pub struct BuildArgs {
     pub scheme: String,
 
     /// Build configuration (debug/release)
-    #[arg(short = 'c', long, default_value = "debug")]
+    #[arg(short = 'C', long, default_value = "debug")]
     pub configuration: String,
 
     /// Target simulator device name
