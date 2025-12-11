@@ -1,0 +1,74 @@
+[package]
+name = "xscape"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "xscape"
+path = "src/main.rs"
+
+[dependencies]
+xscape-common = { workspace = true }
+
+# Async runtime
+tokio = { workspace = true }
+
+# HTTP client
+reqwest = { workspace = true }
+
+# WebSocket
+tokio-tungstenite = { workspace = true }
+futures-util = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+
+# CLI
+clap = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# UUID
+uuid = { workspace = true }
+
+# Time
+chrono = { workspace = true }
+
+# File operations
+walkdir = { workspace = true }
+ignore = { workspace = true }
+tar = { workspace = true }
+flate2 = { workspace = true }
+
+# SHA256
+sha2 = { workspace = true }
+
+# Bytes
+bytes = { workspace = true }
+
+# Open browser
+open = "5"
+
+# Directories
+dirs = "5"
+
+# Unix process management
+libc = "0.2"
+
+# TUI and interactive CLI
+ratatui = "0.29"
+crossterm = "0.28"
+indicatif = "0.17"
+dialoguer = { version = "0.11", features = ["fuzzy-select"] }
+console = "0.15"
+colored = "2.1"

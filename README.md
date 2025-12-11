@@ -1,89 +1,104 @@
-# ios-sim-launcher
+# Xscape
 
-Build and run iOS apps from Linux using a macOS VM or remote Mac.
+**Escape from Xcode.** Build and run iOS apps entirely from Linux.
 
-> *"I hate MacOS so much I am going to automate the testing and emulation of iOS apps for Linux."*
+> *Xscape* — A play on "escape" and "Xcode." Because you shouldn't need a Mac on your desk just to build an iOS app.
 
-## Overview
+---
 
-`ios-sim-launcher` lets you develop iOS apps on Ubuntu without needing a Mac as your primary development machine. It orchestrates builds via `xcodebuild` and runs them in the iOS Simulator via `simctl`, all from the comfort of your Linux terminal.
+## What is Xscape?
+
+Xscape lets you develop iOS apps on Linux by orchestrating a macOS VM (or remote Mac) that handles the actual Xcode builds and simulator runs. You get a clean terminal UI on Linux, and the iOS Simulator streams to your browser via VNC.
+
+**No Mac on your desk required.**
+
+## Architecture
 
 ```
-Ubuntu                          macOS (VM or Remote)
-┌─────────────┐                ┌──────────────────────┐
-│  ios-sim    │───HTTP/WS────▶│    xcode-agent       │
-│    CLI      │                │  ┌────────────────┐  │
-└─────────────┘                │  │  xcodebuild    │  │
-      │                        │  │  simctl        │  │
-      │                        │  │  iOS Simulator │  │
-      └────VNC────────────────▶│  └────────────────┘  │
-                               └──────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                         Linux Host                              │
+│  ┌─────────────┐                                                │
+│  │   xscape    │  <── You are here                              │
+│  │    (CLI)    │                                                │
+│  └──────┬──────┘                                                │
+│         │ HTTP/WebSocket                                        │
+│         ▼                                                       │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              QEMU/KVM macOS VM                           │   │
+│  │  ┌─────────────────┐    ┌─────────────────────────────┐ │   │
+│  │  │  xscape-agent   │───>│     iOS Simulator           │ │   │
+│  │  │  (HTTP Server)  │    │  (via simctl + xcodebuild)  │ │   │
+│  │  └─────────────────┘    └─────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│         │ VNC                                                   │
+│         ▼                                                       │
+│  ┌─────────────┐                                                │
+│  │   noVNC     │  <── View simulator in browser                 │
+│  │  (Browser)  │                                                │
+│  └─────────────┘                                                │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Features
 
-- **Interactive TUI** - Beautiful terminal interface for project selection, simulator management, and more
+- **Interactive TUI** — Clean terminal interface for project selection, simulator management, and builds
 - **Build iOS apps** from Linux using Xcode on a macOS VM or remote Mac
 - **Run in iOS Simulator** and view via VNC in your browser
 - **Stream build logs** in real-time via WebSocket
 - **Manage local macOS VM** with QEMU/KVM
-- **Setup Wizard** - Verify and configure your installation with guided prompts
-- **Support both modes**: local VM or remote Mac over network
+- **Setup Wizard** — Verify and configure your installation with guided prompts
+- **Two modes**: local VM or remote Mac over network
 
 ## Quick Start
 
-### 1. Install dependencies (Ubuntu)
+### 1. Install Dependencies (Ubuntu/Debian)
 
 ```bash
-./scripts/setup-ubuntu.sh
-# Log out and back in
+sudo apt install qemu-system-x86 qemu-utils ovmf
 ```
 
-### 2. Set up macOS VM (or configure remote Mac)
+### 2. Set Up macOS VM
+
+Follow [OSX-KVM](https://github.com/kholia/OSX-KVM) to create a macOS VM with:
+- Xcode installed
+- `xscape-agent` binary running
+
+### 3. Install Xscape
 
 ```bash
-./scripts/setup-macos-vm.sh
-# Follow prompts to install macOS
+cargo install --path crates/xscape
 ```
 
-### 3. Install the agent on macOS
+### 4. Configure
 
-Inside the macOS VM:
 ```bash
-./scripts/setup-agent.sh
+xscape config init
+# Edit ~/.config/xscape/config.toml with your VM disk image path
 ```
 
-### 4. Build and run
+### 5. Run
 
 ```bash
-# Initialize config
-ios-sim config init
-ios-sim config set vm.disk_image ~/macOS-VMs/macos.qcow2
-
-# Start VM
-ios-sim vm start
-
-# Build and run your app
-ios-sim run ./MyApp.xcodeproj --scheme MyApp
+xscape interactive
 ```
 
 ## CLI Commands
 
 ```
-ios-sim interactive   Launch interactive TUI mode
-ios-sim status        Quick status check
-ios-sim setup         Run setup wizard
+xscape interactive    Launch interactive TUI mode
+xscape status         Quick status check
+xscape setup          Run setup wizard
 
-ios-sim build         Build an iOS project
-ios-sim run           Build and run in simulator
-ios-sim vm            Manage local macOS VM
+xscape build          Build an iOS project
+xscape run            Build and run in simulator
+xscape vm             Manage local macOS VM
   start               Start the VM
   stop                Stop the VM
   status              Show VM status
   vnc                 Open simulator in browser
-ios-sim devices       List available simulators
-ios-sim logs          Stream build/app logs
-ios-sim config        Manage configuration
+xscape devices        List available simulators
+xscape logs           Stream build/app logs
+xscape config         Manage configuration
   init                Create config file
   show                Show current config
   set                 Set a config value
@@ -94,50 +109,48 @@ ios-sim config        Manage configuration
 Launch the interactive TUI for a guided experience:
 
 ```bash
-ios-sim interactive
+xscape interactive
 ```
 
 ```
-  ios-sim
-  iOS Development from Linux
+  xscape
+  ──────────────────────────────────────
 
-? Select action
-> Run Project         Build and run in simulator
-  Build Project       Build without running
-  Manage Simulators   List, boot, shutdown devices
-  VM Control          Start, stop, VNC access
-  Settings            Configure ios-sim
-  Setup Wizard        Verify installation
+  agent: connected  |  xcode: 15.4  |  simulators: 12
+
+? Select
+> Run Project
+  Build Project
+  Simulators
+  VM Control
+  Settings
+  Setup Wizard
   Exit
 ```
 
-The interactive mode provides:
-- **Project Browser** - Navigate and select your Xcode projects
-- **Scheme Selection** - Fuzzy search through available schemes
-- **Simulator Picker** - Choose devices with runtime info and status
-- **Progress Indicators** - Spinners and progress bars for all operations
-- **Colorful Output** - Status indicators and formatted logs
+Features:
+- **Step-by-step flows** — Clear progression through project, scheme, and device selection
+- **Breadcrumb navigation** — Always know where you are
+- **Back options everywhere** — Easy to navigate out at any point
+- **iOS version picker** — Select runtime then device
+- **Progress indicators** — Spinners and status for all operations
 
 ## Quick Status
 
-Check your setup at a glance:
-
 ```bash
-ios-sim status
+xscape status
 ```
 
 ```
    +  Status:      Connected
-   +  Xcode:       16.0
+   +  Xcode:       15.4
    +  Simulators:  12
 ```
 
 ## Setup Wizard
 
-Verify and fix your installation:
-
 ```bash
-ios-sim setup
+xscape setup
 ```
 
 The wizard will:
@@ -149,82 +162,72 @@ The wizard will:
 
 ## Configuration
 
-Configuration file: `~/.config/ios-sim/config.toml`
+Config file: `~/.config/xscape/config.toml`
 
 ```toml
 [agent]
 mode = "local-vm"  # or "remote"
 remote_host = "192.168.1.100"
 remote_port = 8080
+timeout_secs = 30
 
 [vm]
-disk_image = "~/macOS-VMs/macos.qcow2"
+disk_image = "/path/to/macos.qcow2"
 memory = "8G"
 cpus = 4
+vnc_port = 5900
+agent_port = 8080
 
 [simulator]
 preferred_device = "iPhone 15 Pro"
 ```
 
-See [config/example-config.toml](config/example-config.toml) for all options.
+## Project Structure
 
-## Architecture
-
-The system consists of three components:
-
-1. **ios-sim CLI** (Ubuntu) - User-facing command-line tool
-2. **xcode-agent** (macOS) - HTTP server wrapping xcodebuild and simctl
-3. **ios-sim-common** - Shared types and protocols
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details.
+```
+xscape/
+├── crates/
+│   ├── xscape/           # Linux CLI binary
+│   ├── xscape-agent/     # macOS agent (runs in VM)
+│   └── xscape-common/    # Shared types
+├── scripts/
+│   ├── setup-ubuntu.sh   # Linux setup script
+│   └── setup-agent.sh    # macOS agent setup
+└── docs/
+    └── VM-SETUP.md       # VM creation guide
+```
 
 ## Requirements
 
-### Ubuntu Host
-- Ubuntu 24.04 (or similar)
-- CPU with virtualization support (Intel VT-x / AMD-V)
-- 16GB+ RAM
-- 150GB+ free disk space
-- KVM enabled
+**Linux Host:**
+- Ubuntu 22.04+ or similar
+- QEMU/KVM with macOS support
+- 16GB+ RAM recommended
+- Rust 1.75+
 
-### macOS VM/Remote
-- macOS Sonoma or Sequoia
+**macOS VM:**
+- macOS 13+ (Ventura or later)
 - Xcode 15+
-- iOS Simulator runtimes
+- xscape-agent running
 
 ## Building from Source
 
 ```bash
-# Build everything
 cargo build --release
 
-# Binaries will be in:
-# target/release/ios-sim      (for Ubuntu)
-# target/release/xcode-agent  (for macOS)
+# Binaries:
+# target/release/xscape        (Linux CLI)
+# target/release/xscape-agent  (macOS agent)
 ```
-
-Cross-compile the agent for macOS:
-```bash
-# On a Mac or using cross-compilation
-cargo build --release -p xcode-agent --target x86_64-apple-darwin
-```
-
-## Documentation
-
-- [Architecture](docs/ARCHITECTURE.md) - System design and data flow
-- [VM Setup](docs/VM-SETUP.md) - Detailed VM setup guide
-- [Future Roadmap](docs/FUTURE.md) - Planned features
 
 ## Legal Note
 
-Running macOS in a VM is only permitted on Apple-branded hardware according to Apple's EULA. When using the local VM mode, ensure you're in compliance with applicable licensing terms.
-
-The "remote Mac" mode is fully compliant as it uses a physical Mac.
+Running macOS in a VM is only permitted on Apple-branded hardware according to Apple's EULA. The "remote Mac" mode is fully compliant as it connects to a physical Mac.
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details.
+MIT
 
-## Contributing
+---
 
-Contributions welcome! Please see the issues for planned features or open a new one to discuss your idea.
+*Xscape — because iOS development shouldn't require a $2000 Mac on your desk.*

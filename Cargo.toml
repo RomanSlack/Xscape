@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "crates/ios-sim-common",
-    "crates/ios-sim",
-    "crates/xcode-agent",
+    "crates/xscape-common",
+    "crates/xscape",
+    "crates/xscape-agent",
 ]
 resolver = "2"
 
@@ -11,7 +11,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Roman Slack"]
 license = "MIT"
-repository = "https://github.com/romanslack/ios-sim-launcher"
+repository = "https://github.com/romanslack/xscape"
 
 [workspace.dependencies]
 # Async runtime
@@ -64,7 +64,7 @@ chrono = { version = "0.4", features = ["serde"] }
 tokio-stream = "0.1"
 
 # Shared types
-ios-sim-common = { path = "crates/ios-sim-common" }
+xscape-common = { path = "crates/xscape-common" }
 
 # SHA256 for checksums
 sha2 = "0.10"
