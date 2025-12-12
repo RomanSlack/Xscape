@@ -1,8 +1,28 @@
-# Xscape
+<p align="center">
+  <img src="readme_image/xscape_title.png" width="800" alt="Xscape">
+</p>
 
-**Escape from Xcode.** Build and run iOS apps entirely from Linux.
+<p align="center">
+  <strong>Escape from Xcode.</strong> Build and run iOS apps entirely from Linux.
+</p>
 
-> *Xscape* — A play on "escape" and "Xcode." Because you shouldn't need a Mac on your desk just to build an iOS app.
+<p align="center">
+  <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust">
+  <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux">
+  <img src="https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS">
+  <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white" alt="iOS">
+  <img src="https://img.shields.io/badge/QEMU-FF6600?style=for-the-badge&logo=qemu&logoColor=white" alt="QEMU">
+</p>
+
+<p align="center">
+  <a href="https://claude.ai/claude-code">
+    <img src="https://img.shields.io/badge/Built%20with-Claude%20Code-blueviolet?style=for-the-badge" alt="Built with Claude Code">
+  </a>
+</p>
+
+<p align="center">
+  <em>Xscape — A play on "escape" and "Xcode." Because you shouldn't need a Mac on your desk just to build an iOS app.</em>
+</p>
 
 ---
 
@@ -112,21 +132,9 @@ Launch the interactive TUI for a guided experience:
 xscape interactive
 ```
 
-```
-  xscape
-  ──────────────────────────────────────
-
-  agent: connected  |  xcode: 15.4  |  simulators: 12
-
-? Select
-> Run Project
-  Build Project
-  Simulators
-  VM Control
-  Settings
-  Setup Wizard
-  Exit
-```
+<p align="center">
+  <img src="readme_image/screenshot_1_cli.png" alt="Xscape CLI">
+</p>
 
 Features:
 - **Step-by-step flows** — Clear progression through project, scheme, and device selection
