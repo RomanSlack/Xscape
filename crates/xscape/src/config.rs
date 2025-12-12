@@ -66,15 +66,19 @@ timeout_secs = 30
 # Path to QEMU binary
 qemu_path = "/usr/bin/qemu-system-x86_64"
 
-# Path to macOS disk image
-disk_image = ""
+# Path to OSX-KVM directory (recommended - other paths derived automatically)
+# osx_kvm_path = "/home/user/OSX-KVM"
 
-# Path to OVMF UEFI firmware
-ovmf_code = "/usr/share/OVMF/OVMF_CODE.fd"
+# Individual paths (alternative to osx_kvm_path)
+disk_image = ""              # Main macOS disk (mac_hdd_ng.img)
+opencore_image = ""          # OpenCore bootloader (OpenCore/OpenCore.qcow2)
+base_system_image = ""       # Recovery image (BaseSystem.img)
+ovmf_code = ""               # UEFI firmware code (OVMF_CODE.fd)
+ovmf_vars = ""               # UEFI firmware vars (OVMF_VARS-1920x1080.fd)
 
 # VM resources
-memory = "8G"
-cpus = 4
+memory = "16384"             # Memory in MiB (16GB)
+cpus = 8
 
 # Ports
 vnc_port = 5900
@@ -85,8 +89,8 @@ agent_port = 8080
 boot_timeout_secs = 180
 
 [vnc]
-# Path to noVNC installation
-novnc_path = "/opt/novnc"
+# Path to noVNC installation (optional)
+novnc_path = "/usr/share/novnc"
 
 # websockify port
 websockify_port = 6080

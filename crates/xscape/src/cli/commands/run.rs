@@ -142,7 +142,7 @@ pub async fn run(args: RunArgs, client: &AgentClient, config: &CliConfig) -> Res
     println!("  Session: {}", run_result.session_id);
 
     println!("\nApp is running in the simulator.");
-    println!("Use 'ios-sim vm vnc' to view the simulator GUI.");
+    println!("Use 'xscape vm vnc' to view the simulator GUI.");
 
     Ok(())
 }

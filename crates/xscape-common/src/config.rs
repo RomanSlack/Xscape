@@ -71,19 +71,34 @@ pub enum AgentMode {
     LocalVm,
 }
 
-/// QEMU VM configuration
+/// QEMU VM configuration (OSX-KVM compatible)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VmConfig {
+    /// Path to existing boot script (e.g., OpenCore-Boot.sh) - if set, uses this instead of manual QEMU config
+    #[serde(default)]
+    pub boot_script: PathBuf,
     /// Path to QEMU binary
     #[serde(default = "default_qemu_path")]
     pub qemu_path: PathBuf,
-    /// Path to macOS disk image
+    /// Path to OSX-KVM directory (contains OpenCore, OVMF, etc.)
+    #[serde(default)]
+    pub osx_kvm_path: PathBuf,
+    /// Path to macOS main disk image (mac_hdd_ng.img)
     #[serde(default)]
     pub disk_image: PathBuf,
-    /// Path to OVMF UEFI firmware
+    /// Path to OpenCore bootloader image (OpenCore/OpenCore.qcow2)
+    #[serde(default)]
+    pub opencore_image: PathBuf,
+    /// Path to BaseSystem recovery image (BaseSystem.img)
+    #[serde(default)]
+    pub base_system_image: PathBuf,
+    /// Path to OVMF UEFI firmware code
     #[serde(default = "default_ovmf_path")]
     pub ovmf_code: PathBuf,
-    /// Memory allocation (e.g., "8G")
+    /// Path to OVMF UEFI firmware vars (for resolution settings)
+    #[serde(default)]
+    pub ovmf_vars: PathBuf,
+    /// Memory allocation in MiB (e.g., 16384 for 16GB)
     #[serde(default = "default_memory")]
     pub memory: String,
     /// Number of CPU cores
@@ -106,9 +121,14 @@ pub struct VmConfig {
 impl Default for VmConfig {
     fn default() -> Self {
         Self {
+            boot_script: PathBuf::new(),
             qemu_path: default_qemu_path(),
+            osx_kvm_path: PathBuf::new(),
             disk_image: PathBuf::new(),
+            opencore_image: PathBuf::new(),
+            base_system_image: PathBuf::new(),
             ovmf_code: default_ovmf_path(),
+            ovmf_vars: PathBuf::new(),
             memory: default_memory(),
             cpus: default_cpus(),
             vnc_port: default_vnc_port(),

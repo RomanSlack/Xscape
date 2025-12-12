@@ -448,7 +448,7 @@ async fn settings_flow(config: &xscape_common::CliConfig) -> Result<()> {
     println!();
     Screen::info(&format!(
         "Config file: {}",
-        "~/.config/ios-sim/config.toml".dimmed()
+        "~/.config/xscape/config.toml".dimmed()
     ));
 
     Screen::pause();

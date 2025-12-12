@@ -41,7 +41,7 @@ fn show_config() -> Result<()> {
 
     if !config_path.exists() {
         println!("No config file found at: {:?}", config_path);
-        println!("Run 'ios-sim config init' to create one.");
+        println!("Run 'xscape config init' to create one.");
         return Ok(());
     }
 

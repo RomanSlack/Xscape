@@ -43,8 +43,14 @@ pub async fn wait_for_agent(agent_url: &str, timeout_secs: u64) -> Result<()> {
     )
 }
 
-/// Check if VM is running by checking agent health
+/// Check if VM is running (checks QEMU process first, then agent health)
 pub async fn is_vm_running(config: &CliConfig) -> bool {
+    // First check if there's a QEMU process running
+    if !qemu::find_running_vms().is_empty() {
+        return true;
+    }
+
+    // Fallback: check if agent is responding (for remote mode or external VM)
     let agent_url = format!("http://127.0.0.1:{}", config.vm.agent_port);
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(2))

@@ -226,7 +226,7 @@ impl MainMenu {
             "Build Project       Build without running",
             "Manage Simulators   List, boot, shutdown devices",
             "VM Control          Start, stop, VNC access",
-            "Settings            Configure ios-sim",
+            "Settings            Configure xscape",
             "Setup Wizard        Verify installation",
             "Exit",
         ];

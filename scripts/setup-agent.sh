@@ -71,11 +71,14 @@ EOF
 
 echo "Created: $AGENT_DIR/config.toml"
 
-# Create launchd plist for auto-start
-PLIST_PATH="/Library/LaunchDaemons/com.iossim.agent.plist"
+# Create LaunchAgent for auto-start (runs as user, more reliable than LaunchDaemon)
+LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
+PLIST_PATH="$LAUNCH_AGENTS_DIR/com.iossim.agent.plist"
 
-echo "Creating launchd service..."
-sudo tee "$PLIST_PATH" > /dev/null << EOF
+echo "Creating LaunchAgent for auto-start..."
+mkdir -p "$LAUNCH_AGENTS_DIR"
+
+cat > "$PLIST_PATH" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -104,17 +107,42 @@ EOF
 
 echo "Created: $PLIST_PATH"
 
+# Remove old LaunchDaemon if it exists (from previous installs)
+OLD_DAEMON="/Library/LaunchDaemons/com.iossim.agent.plist"
+if [ -f "$OLD_DAEMON" ]; then
+    echo "Removing old LaunchDaemon..."
+    sudo launchctl unload "$OLD_DAEMON" 2>/dev/null || true
+    sudo rm -f "$OLD_DAEMON"
+fi
+
 # Load the service if binary exists
 if [ -f "$AGENT_DIR/xcode-agent" ]; then
-    echo "Loading launchd service..."
-    sudo launchctl load "$PLIST_PATH" 2>/dev/null || true
+    echo "Loading LaunchAgent..."
+    # Unload first in case it's already loaded
+    launchctl unload "$PLIST_PATH" 2>/dev/null || true
+    launchctl load "$PLIST_PATH"
 
-    echo ""
-    echo "=== Agent Started ==="
-    echo "The agent should now be running on port $AGENT_PORT"
-    echo ""
-    echo "To check status: curl http://localhost:$AGENT_PORT/health"
-    echo "To view logs: tail -f $AGENT_DIR/logs/stdout.log"
+    # Wait a moment for it to start
+    sleep 2
+
+    # Verify it's running
+    if curl -s "http://localhost:$AGENT_PORT/health" > /dev/null 2>&1; then
+        echo ""
+        echo "=== Agent Started Successfully ==="
+        echo "The agent is running on port $AGENT_PORT"
+        echo ""
+        echo "To check status: curl http://localhost:$AGENT_PORT/health"
+        echo "To view logs: tail -f $AGENT_DIR/logs/stdout.log"
+        echo ""
+        echo "The agent will auto-start on login."
+    else
+        echo ""
+        echo "=== Agent Installed (checking startup...) ==="
+        echo "The LaunchAgent is installed but the agent may still be starting."
+        echo ""
+        echo "Check status in a few seconds: curl http://localhost:$AGENT_PORT/health"
+        echo "View logs: tail -f $AGENT_DIR/logs/stderr.log"
+    fi
 else
     echo ""
     echo "=== Setup Complete (Agent Binary Missing) ==="
@@ -122,7 +150,7 @@ else
     echo "To finish setup:"
     echo "1. Build the agent: cargo build --release -p xcode-agent"
     echo "2. Copy the binary: scp target/release/xcode-agent mac:$AGENT_DIR/"
-    echo "3. Start the service: sudo launchctl load $PLIST_PATH"
+    echo "3. Load the agent: launchctl load $PLIST_PATH"
 fi
 
 echo ""
